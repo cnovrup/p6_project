@@ -92,15 +92,17 @@ class Arm:
         twist.angular_y = th_y
         twist.angular_z = th_z
         
-        print ("Sending the twist command for 5 seconds...")
         self.base.SendTwistCommand(command)
         
         # Let time for twist to be executed
         #time.sleep(5)
         
-        print ("Stopping the robot...")
         #self.base.Stop()
         time.sleep(1)
         
         return True
+    
+    def get_data(self):
+        feedback = self.base_cyclic.RefreshFeedback()
+        return feedback.base
     

@@ -27,9 +27,10 @@ def point_base_hand(angles, distances, p0):
     P = gripper_frame @ point_from_camera + p0
     return P
 
-angles = [101.5*math.pi/180, -4.9*math.pi/180, 102.1*math.pi/180]
-#angles = [0, 0, 0]
-distances = [0.4, 0.08, -0.02]
-p0 = np.array([0.397, 0.04, 0.126])
-point_base_hand(angles, distances, p0)
-#print(point_base_hand(angles, distances, p0))
+def saturation(val, max_val, min_val):
+    if(val > max_val):
+        return max_val
+    elif(val < min_val):
+        return min_val
+    else:
+        return val
