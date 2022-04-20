@@ -105,4 +105,63 @@ class Arm:
     def get_data(self):
         feedback = self.base_cyclic.RefreshFeedback()
         return feedback.base
+
+    def get_joint_angles(self):
+        jointangles = base.GetMeasuredJointAngles()
+        jointangles_list = [0,0,0,0,0,0]
+        for i in range(6):
+            jointangle = jointangles.joint_angles[i]
+            jointangles_list[jointangle.joint_identifier] = jointangle.value
+        return jointangles_list
+
+    def get_pose(self):
+        return base.GetMeasuredCartesianPose()
+
+    def send_pose(self, x, y, z, th_x, th_y, th_z):
+        action = Base_pb2.Action()
+
+        cartesian_pose = action.reach_pose.target_pose
+        cartesian_pose.x = x    # (meters)
+        cartesian_pose.y = y     # (meters)
+        cartesian_pose.z = x     # (meters)
+        cartesian_pose.theta_x = th_x # (degrees)
+        cartesian_pose.theta_y = th_y # (degrees)
+        cartesian_pose.theta_z = th_z # (degrees)
+
+        e = threading.Event()
+        notification_handle = base.OnNotificationActionTopic(
+            check_for_end_or_abort(e),
+            Base_pb2.NotificationOptions()
+        )
+
+        self.base.ExecuteAction(action)
+
+        finished = e.wait(TIMEOUT_DURATION)
+        base.Unsubscribe(notification_handle)
+
+    def send_jointangles(self, joint_angle_list):
+        action = Base_pb2.Action()
+
+        for joint_id in range(6):
+            joint_angle = action.reach_joint_angles.joint_angles.joint_angles.add()
+            joint_angle.joint_identifier = joint_id
+            joint_angle.value = joint_angle_list[joint_id]
+
+        e = threading.Event()
+        notification_handle = base.OnNotificationActionTopic(
+            check_for_end_or_abort(e),
+            Base_pb2.NotificationOptions())
+            
+        base.ExecuteAction(action)
+
+        finished = e.wait(TIMEOUT_DURATION)
+        base.Unsubscribe(notification_handle)
+
+    def gripper(self, opening):
+        gripper_command = Base_pb2.GripperCommand()
+        finger = gripper_command.gripper.finger.add()
+        gripper_command.mode = Base_pb2.GRIPPER_POSITION
+        finger.finger_identifier = 1
+        finger.position = opening
+        self.base.SendGripperCommand(gripper_command)
     
