@@ -11,17 +11,12 @@ import cv2
 import math
 
 class Camera:
-    def __init__(self, width, height):
-        #self.intrinsics = (960.5, 960.7) #()
-        self.fx = 960.5
-        self.fy = 960.7
-        
+    def __init__(self, width, height):      
         self.width = width
         self.height = height
         
         self.pipeline = rs.pipeline()
         self.config = rs.config()
-        self.rotmat = rs.extrinsics().rotation
         
         self.config.enable_stream(rs.stream.depth, width, height, rs.format.z16, 30)
         self.config.enable_stream(rs.stream.color, width, height, rs.format.bgr8, 30)
@@ -29,10 +24,8 @@ class Camera:
         self.profile = self.pipeline.start(self.config)
         self.rgb_profile = self.profile.get_stream(rs.stream.color)
         self.intr = self.rgb_profile.as_video_stream_profile().get_intrinsics()
-        self.fx = self.intr.fx
-        self.fy = self.intr.fy
-        self.u0 = self.intr.ppx
-        self.v0 = self.intr.ppy
+        self.fx, self.fy = self.intr.fx, self.intr.fy
+        self.u0, self.v0 = self.intr.ppx, self.intr.ppy
         
         self.depth_sensor = self.profile.get_device().first_depth_sensor()
         self.depth_sensor.set_option( rs.option.min_distance, 0)
