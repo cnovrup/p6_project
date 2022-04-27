@@ -9,14 +9,15 @@ import torch
 
 class Network:
     def __init__(self):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
+        #self.model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
+        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt', force_reload=True)
 
     def run_inference(self, image):
         return self.model(image)
     
     def get_bottle(self, result):
         objs = result.pandas().xyxy[0]
-        objs_name = objs.loc[objs['name'] == 'bottle']
+        objs_name = objs.loc[objs['name'] == 'Weed']
         obj = objs_name.iloc[0]
         return (int(obj.xmin), int(obj.ymin)), (int(obj.xmax), int(obj.ymax))
     

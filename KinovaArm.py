@@ -56,7 +56,7 @@ class Arm:
         action_list = self.base.ReadAllActions(action_type)
         action_handle = None
         for action in action_list.action_list:
-            if action.name == "Home2":
+            if action.name == "home3":
                 action_handle = action.handle
 
         if action_handle == None:
@@ -98,7 +98,7 @@ class Arm:
         #time.sleep(5)
         
         #self.base.Stop()
-        time.sleep(1)
+        #time.sleep(1)
         
         return True
     
@@ -107,7 +107,7 @@ class Arm:
         return feedback.base
 
     def get_joint_angles(self):
-        jointangles = base.GetMeasuredJointAngles()
+        jointangles = self.base.GetMeasuredJointAngles()
         jointangles_list = [0,0,0,0,0,0]
         for i in range(6):
             jointangle = jointangles.joint_angles[i]
@@ -115,7 +115,7 @@ class Arm:
         return jointangles_list
 
     def get_pose(self):
-        return base.GetMeasuredCartesianPose()
+        return self.base.GetMeasuredCartesianPose()
 
     def send_pose(self, x, y, z, th_x, th_y, th_z):
         action = Base_pb2.Action()
@@ -129,15 +129,15 @@ class Arm:
         cartesian_pose.theta_z = th_z # (degrees)
 
         e = threading.Event()
-        notification_handle = base.OnNotificationActionTopic(
-            check_for_end_or_abort(e),
+        notification_handle = self.base.OnNotificationActionTopic(
+            self.check_for_end_or_abort(e),
             Base_pb2.NotificationOptions()
         )
 
         self.base.ExecuteAction(action)
 
-        finished = e.wait(TIMEOUT_DURATION)
-        base.Unsubscribe(notification_handle)
+        finished = e.wait(self.TIMEOUT_DURATION)
+        self.base.Unsubscribe(notification_handle)
 
     def send_jointangles(self, joint_angle_list):
         action = Base_pb2.Action()
@@ -148,14 +148,14 @@ class Arm:
             joint_angle.value = joint_angle_list[joint_id]
 
         e = threading.Event()
-        notification_handle = base.OnNotificationActionTopic(
-            check_for_end_or_abort(e),
+        notification_handle = self.base.OnNotificationActionTopic(
+            self.check_for_end_or_abort(e),
             Base_pb2.NotificationOptions())
             
-        base.ExecuteAction(action)
+        self.base.ExecuteAction(action)
 
-        finished = e.wait(TIMEOUT_DURATION)
-        base.Unsubscribe(notification_handle)
+        finished = e.wait(self.TIMEOUT_DURATION)
+        self.base.Unsubscribe(notification_handle)
 
     def gripper(self, opening):
         gripper_command = Base_pb2.GripperCommand()
