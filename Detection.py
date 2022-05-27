@@ -10,7 +10,7 @@ import torch
 class Network:
     def __init__(self):
         #self.model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
-        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path='last.pt', force_reload=True)
+        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path='weed7.pt', force_reload=True)
 
     def run_inference(self, image):
         return self.model(image)
