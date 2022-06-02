@@ -65,4 +65,5 @@
 
 ` get_proj()` - takes a 3D vector (error vector) and returns the image projection of this vectors endpoint. Useful to see where the estimator believes the plant is. 
 
-
+## bounding_boxer
+Contains the matlab code to automatically draw bounding boxes around the plant. bounding_boxer.m contains the main code for this, and in the file, the 3D world point along with the dimensions of the 3D bounding box is specified. It needs 4 folders in the same directory, called "images", "data", "bounding_box" and "bb_images". They contain the images to be labeled, the data about the camera position relative to the manipulator base, bounding box data and the images with the bounding box drawn. These folders need to be created manually. It does not matter what the image files are called, as long as an image file has the same name as the corresponding data file. The default file type is png, but can be changed in the script. if `savebox = false` it will not save images with the bounding box, which is recommended for large sets of data. If set to true, it will save the images with bounding box drawn on them. 
