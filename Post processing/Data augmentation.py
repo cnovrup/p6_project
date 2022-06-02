@@ -14,8 +14,7 @@ class BoundingBox: #Create class to easier contain bounding box data
         self.width = width
         self.name = Name
 
-
-
+        
 currentDirec = os. getcwd()
 ImagePath = os.path.join(currentDirec, 'images')
 BBPath = os.path.join(currentDirec, 'labels')
@@ -25,7 +24,7 @@ Images = os.listdir(ImagePath)
 BBList = os.listdir(BBPath)
 bboxes = []
 
-#1360 is double bounding box
+
 for i in range(len(Images)): #len(Images) #Here is the amount of images started with
 
     for n in range(5): #This loop is the multiplied, meaning each number 'i' with be multiplied with 4 
@@ -37,7 +36,6 @@ for i in range(len(Images)): #len(Images) #Here is the amount of images started 
         Input = len(InputBB) #Check how many bounding boxes
         print(Input)
         
-        
         bboxesInput = InputBB
         
         category_ids = []
@@ -45,20 +43,20 @@ for i in range(len(Images)): #len(Images) #Here is the amount of images started 
         
         for j in range(Input):
             Read = bboxesInput[j]
-            ReadSplit = Read.split()
+            ReadSplit = Read.split() #Read the four YOLO coordinates of the bounding box 
             if ReadSplit[0] == '0':
                 bb1 = 0 #Ene
             if ReadSplit[0] == '1':
                 bb1 = 1 #Gyvel
-            category_ids.append(bb1) #This list has to contain the bounding boxes for the image   
+            category_ids.append(bb1) #This list has to contain the classes of the bounding boxes for the image   
             bboxes.append([[ReadSplit[1],ReadSplit[2],ReadSplit[3],ReadSplit[4]]])
             
-        category_id_to_name = {0: 'Ene', 1: 'Gyvel'}
+        category_id_to_name = {0: 'Ene', 1: 'Gyvel'} #Here we related the class number to a name 
         
-        transform = A.Compose([ #This lest is where we declare the different transformations which the system should perform 
-            A.HorizontalFlip(p=0.5), #0.5
-            A.RandomSizedBBoxSafeCrop(416, 416, p = 0.5), #0.5
-            A.Rotate(limit = [-50, 50],p = 0.5), #0.5
+        transform = A.Compose([ #This is where the transformations are declared 
+            A.HorizontalFlip(p=0.5), #p = the propability if this augmentation happening
+            A.RandomSizedBBoxSafeCrop(416, 416, p = 0.5), 
+            A.Rotate(limit = [-50, 50],p = 0.5), 
             A.ColorJitter(brightness=(0.75, 1.65), contrast=(0.8, 1.2), saturation=(0.25, 2), hue=(-0.2, 0.2))
         ], bbox_params=A.BboxParams(format='yolo', label_fields=['category_ids']),)
         
@@ -66,9 +64,8 @@ for i in range(len(Images)): #len(Images) #Here is the amount of images started 
         for j in range(len(bboxes)):
             data1 = bboxes[j][0]
             data3.append([float(data1[0]),float(data1[1]),float(data1[2]),float(data1[3])])
-
         
-        transformed = transform(image=color_image, bboxes=data3, category_ids=category_ids)
+        transformed = transform(image=color_image, bboxes=data3, category_ids=category_ids) #Here the transformation is applied
 
         transformed_image = transformed['image']
         transformed_bboxes = transformed['bboxes']
@@ -90,7 +87,7 @@ for i in range(len(Images)): #len(Images) #Here is the amount of images started 
         height = []
         width = []
         for j in range(len(BBout)):
-            u.append(BBout[j].u*416)
+            u.append(BBout[j].u*416) #Note this number '416' is the amount if pixels, should be changed accordingly
             v.append(BBout[j].v*416)
             width.append(BBout[j].width*416-1)
             height.append(BBout[j].height*416-1)
