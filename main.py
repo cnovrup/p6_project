@@ -13,7 +13,7 @@ import Projection
 width = 640
 height = 480
 
-Kp_ang = 1
+Kp_ang = 1.5
 Kp_lin = 1
 max_ang_vel = 100
 max_lin_vel = 0.05
